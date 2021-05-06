@@ -30,18 +30,10 @@ class IntroductionScreen extends StatefulWidget {
   /// Skip button
   final Widget? skip;
 
-  /// Next button
-  final Widget? next;
-
   /// Is the Skip button should be display
   ///
   /// @Default `false`
   final bool showSkipButton;
-
-  /// Is the Next button should be display
-  ///
-  /// @Default `true`
-  final bool showNextButton;
 
   /// If the 'Done' button should be rendered at all the end
   ///
@@ -93,11 +85,6 @@ class IntroductionScreen extends StatefulWidget {
   /// @Default `1`
   final int dotsFlex;
 
-  /// Flex ratio of the next/done button
-  ///
-  /// @Default `1`
-  final int nextFlex;
-
   /// Type of animation between pages
   ///
   /// @Default `Curves.easeIn`
@@ -108,9 +95,6 @@ class IntroductionScreen extends StatefulWidget {
 
   /// Color of skip button
   final Color? skipColor;
-
-  /// Color of next button
-  final Color? nextColor;
 
   /// Color of done button
   final Color? doneColor;
@@ -168,9 +152,7 @@ class IntroductionScreen extends StatefulWidget {
     this.onSkip,
     this.onChange,
     this.skip,
-    this.next,
     this.showSkipButton = false,
-    this.showNextButton = true,
     this.showDoneButton = true,
     this.isProgress = true,
     this.isProgressTap = true,
@@ -182,11 +164,9 @@ class IntroductionScreen extends StatefulWidget {
     this.initialPage = 0,
     this.skipFlex = 1,
     this.dotsFlex = 1,
-    this.nextFlex = 1,
     this.curve = Curves.easeIn,
     this.color,
     this.skipColor,
-    this.nextColor,
     this.doneColor,
     this.isTopSafeArea = false,
     this.isBottomSafeArea = false,
@@ -206,8 +186,7 @@ class IntroductionScreen extends StatefulWidget {
         ),
         assert(!showDoneButton || (done != null && onDone != null)),
         assert((showSkipButton && skip != null) || !showSkipButton),
-        assert((showNextButton && next != null) || !showNextButton),
-        assert(skipFlex >= 0 && dotsFlex >= 0 && nextFlex >= 0),
+        assert(skipFlex >= 0 && dotsFlex >= 0),
         assert(initialPage >= 0),
         super(key: key);
 
@@ -234,8 +213,6 @@ class IntroductionScreenState extends State<IntroductionScreen> {
   int getPagesLength() {
     return (widget.pages ?? widget.rawPages!).length;
   }
-
-  void next() => animateScroll(_currentPage.round() + 1);
 
   void previous() => animateScroll(_currentPage.round() - 1);
 
@@ -294,12 +271,6 @@ class IntroductionScreenState extends State<IntroductionScreen> {
       onPressed: isSkipBtn ? _onSkip : null,
     );
 
-    final nextBtn = IntroButton(
-      child: widget.next,
-      color: widget.nextColor ?? widget.color,
-      onPressed: widget.showNextButton && !_isScrolling ? next : null,
-    );
-
     final doneBtn = IntroButton(
       child: widget.done,
       color: widget.doneColor ?? widget.color,
@@ -354,12 +325,9 @@ class IntroductionScreenState extends State<IntroductionScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        flex: widget.skipFlex,
-                        child: _toggleBtn(skipBtn, isSkipBtn),
-                      ),
-                      Expanded(
                         flex: widget.dotsFlex,
-                        child: Center(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
                           child: widget.isProgress
                               ? DotsIndicator(
                                   reversed: widget.rtl,
@@ -374,10 +342,10 @@ class IntroductionScreenState extends State<IntroductionScreen> {
                         ),
                       ),
                       Expanded(
-                        flex: widget.nextFlex,
+                        flex: widget.skipFlex,
                         child: isLastPage
                             ? _toggleBtn(doneBtn, widget.showDoneButton)
-                            : _toggleBtn(nextBtn, widget.showNextButton),
+                            : _toggleBtn(skipBtn, widget.showSkipButton),
                       ),
                     ].asReversed(widget.rtl),
                   ),
